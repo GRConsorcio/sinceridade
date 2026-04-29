@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Questionário – GR Consórcio</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Barlow+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --gold:#C9A84C;--gold-light:#E8C97A;--gold-dark:#8B6914;
+    --bk:#0A0A0A;--bk2:#111111;--bk3:#1A1A1A;--bk4:#222222;
+    --wh:#F5F0E8;--wh2:#DDD8CC;--wh3:#AAAAAA;
+    --bd:rgba(201,168,76,0.2);--bd2:rgba(201,168,76,0.4);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bk);color:var(--wh);font-family:'Barlow Condensed',sans-serif;min-height:100vh;padding-bottom:4rem;}
+  body::before{content:'CONFIDENCIAL';position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);font-family:'Barlow Condensed',sans-serif;font-size:120px;font-weight:600;letter-spacing:20px;color:rgba(201,168,76,0.04);pointer-events:none;z-index:0;white-space:nowrap;}
+  .header{background:var(--bk2);border-bottom:1px solid var(--bd);padding:2.5rem 2rem 2rem;text-align:center;position:relative;overflow:hidden;}
+  .header::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:300px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+  .logo{font-family:'Playfair Display',serif;font-size:32px;font-weight:900;letter-spacing:5px;color:var(--gold);text-transform:uppercase;}
+  .logo-sub{font-size:11px;letter-spacing:6px;color:var(--wh3);text-transform:uppercase;font-weight:300;margin-top:4px;}
+  .badge-conf{display:inline-flex;align-items:center;gap:6px;margin-top:16px;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);border:0.5px solid var(--bd2);padding:5px 16px;border-radius:20px;background:rgba(201,168,76,0.06);}
+  .badge-conf::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gold);}
+  .form-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--wh);margin-top:20px;letter-spacing:1px;}
+  .form-subtitle{font-size:13px;color:var(--wh3);margin-top:6px;letter-spacing:1px;line-height:1.6;}
+  .form-wrap{max-width:760px;margin:0 auto;padding:2rem 1.5rem;position:relative;z-index:1;}
+  .id-section{background:var(--bk2);border:1px solid var(--bd2);border-radius:12px;padding:1.5rem;margin-bottom:2rem;position:relative;overflow:hidden;}
+  .id-section::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--gold),var(--gold-dark));}
+  .id-title{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:1.2rem;padding-left:.5rem;}
+  .id-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+  @media(max-width:500px){.id-grid{grid-template-columns:1fr;}}
+  .field-group{display:flex;flex-direction:column;gap:6px;}
+  .field-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--wh3);font-weight:500;}
+  .field-label span{color:var(--gold);}
+  input[type="text"],select,textarea{background:var(--bk3);border:0.5px solid var(--bd);border-radius:6px;color:var(--wh);font-family:'Barlow Condensed',sans-serif;font-size:15px;padding:10px 14px;width:100%;transition:border-color .2s,background .2s;outline:none;}
+  input[type="text"]:focus,select:focus,textarea:focus{border-color:var(--gold);background:var(--bk4);}
+  select option{background:var(--bk3);}
+  .progress-wrap{margin-bottom:1.5rem;background:var(--bk2);border:0.5px solid var(--bd);border-radius:8px;padding:12px 16px;}
+  .progress-info{display:flex;justify-content:space-between;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--wh3);margin-bottom:8px;}
+  .progress-info span:last-child{color:var(--gold);}
+  .progress-bar-bg{height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;}
+  .progress-bar-fg{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--gold-dark),var(--gold));transition:width .4s ease;width:0%;}
+  .q-card{background:var(--bk2);border:0.5px solid var(--bd);border-radius:12px;padding:1.5rem;margin-bottom:1rem;transition:border-color .2s;position:relative;overflow:hidden;}
+  .q-card.answered{border-color:rgba(201,168,76,0.35);}
+  .q-card.answered::after{content:'✓';position:absolute;top:14px;right:16px;font-size:12px;color:var(--gold);opacity:.7;}
+  .q-card.error{border-color:rgba(240,153,123,0.5);}
+  .q-card.dynamic{border-color:rgba(93,202,165,0.2);}
+  .q-card.dynamic .q-num{color:#5DCAA5;}
+  .q-num{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gold-dark);font-weight:600;margin-bottom:8px;}
+  .q-text{font-size:16px;font-weight:500;color:var(--wh);line-height:1.5;margin-bottom:1.2rem;letter-spacing:.3px;}
+  .q-type-badge{display:inline-block;font-size:9px;letter-spacing:2px;text-transform:uppercase;padding:2px 8px;border-radius:10px;margin-bottom:12px;}
+  .q-type-badge.fechada{background:rgba(201,168,76,0.1);color:var(--gold);border:0.5px solid var(--bd);}
+  .q-type-badge.aberta{background:rgba(93,202,165,0.1);color:#5DCAA5;border:0.5px solid rgba(93,202,165,0.2);}
+  .q-type-badge.numerica{background:rgba(55,138,221,0.1);color:#85B7EB;border:0.5px solid rgba(55,138,221,0.2);}
+  .options{display:flex;flex-direction:column;gap:8px;}
+  .option-label{display:flex;align-items:center;gap:12px;padding:10px 14px;border:0.5px solid var(--bd);border-radius:8px;cursor:pointer;transition:all .15s;font-size:14px;color:var(--wh2);letter-spacing:.5px;}
+  .option-label:hover{border-color:var(--gold);background:rgba(201,168,76,0.05);color:var(--wh);}
+  .option-label input[type="radio"]{display:none;}
+  .option-radio{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--wh3);flex-shrink:0;transition:all .15s;display:flex;align-items:center;justify-content:center;}
+  .option-label input[type="radio"]:checked~.option-radio{border-color:var(--gold);background:var(--gold);}
+  .option-label input[type="radio"]:checked~.option-radio::after{content:'';width:6px;height:6px;border-radius:50%;background:var(--bk);}
+  .option-label:has(input[type="radio"]:checked){border-color:var(--gold);background:rgba(201,168,76,0.08);color:var(--gold-light);}
+  textarea{resize:vertical;min-height:90px;line-height:1.6;}
+  .rating-wrap{display:flex;flex-direction:column;gap:10px;}
+  .rating-scale{display:flex;gap:6px;flex-wrap:wrap;}
+  .rating-btn{flex:1;min-width:36px;padding:10px 4px;border:0.5px solid var(--bd);border-radius:6px;background:var(--bk3);color:var(--wh2);font-family:'Barlow Condensed',sans-serif;font-size:15px;font-weight:600;cursor:pointer;transition:all .15s;text-align:center;}
+  .rating-btn:hover{border-color:var(--gold);color:var(--gold);}
+  .rating-btn.selected{background:var(--gold);border-color:var(--gold);color:var(--bk);}
+  .rating-labels{display:flex;justify-content:space-between;font-size:10px;letter-spacing:1px;color:var(--wh3);text-transform:uppercase;}
+  .error-msg{font-size:11px;color:#F0997B;margin-top:8px;display:none;letter-spacing:1px;}
+  .field-error{font-size:11px;color:#F0997B;letter-spacing:1px;margin-top:4px;display:none;}
+
+  /* ADD QUESTION PANEL */
+  .add-panel{background:var(--bk2);border:1px dashed rgba(93,202,165,0.3);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;}
+  .add-panel-title{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:#5DCAA5;font-weight:600;margin-bottom:1rem;display:flex;align-items:center;gap:8px;}
+  .add-panel-title::before{content:'';width:12px;height:12px;border-radius:50%;border:1.5px solid #5DCAA5;display:inline-flex;align-items:center;justify-content:center;}
+  .btn-add{padding:10px;font-size:12px;letter-spacing:2px;text-transform:uppercase;border-radius:6px;cursor:pointer;font-family:'Barlow Condensed',sans-serif;font-weight:600;transition:all .15s;}
+  .btn-add.primary{background:var(--gold);color:var(--bk);border:none;}
+  .btn-add.primary:hover{background:var(--gold-light);}
+  .btn-add.secondary{background:transparent;color:var(--wh2);border:0.5px solid var(--bd);}
+  .btn-add.secondary:hover{border-color:var(--gold);color:var(--gold);}
+  .btn-add.danger{background:transparent;color:#F0997B;border:0.5px solid rgba(240,153,123,0.3);font-size:11px;padding:6px 12px;}
+  .btn-add.small-add{background:transparent;color:#5DCAA5;border:0.5px solid rgba(93,202,165,0.3);font-size:11px;padding:6px 14px;margin-top:4px;}
+  .add-status{font-size:11px;color:var(--wh3);margin-top:8px;letter-spacing:1px;min-height:18px;}
+  .add-status.ok{color:#5DCAA5;}
+  .add-status.err{color:#F0997B;}
+
+  /* SUBMIT */
+  .submit-wrap{text-align:center;margin-top:2rem;}
+  .submit-btn{background:var(--gold);color:var(--bk);border:none;border-radius:8px;padding:14px 48px;font-family:'Playfair Display',serif;font-size:16px;font-weight:700;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .2s;width:100%;max-width:400px;}
+  .submit-btn:hover{background:var(--gold-light);transform:translateY(-1px);}
+  .submit-note{font-size:11px;color:var(--wh3);letter-spacing:1px;margin-top:12px;}
+  .success-screen{display:none;text-align:center;padding:4rem 2rem;animation:fadeIn .5s ease;}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:none}}
+  .success-icon{width:64px;height:64px;border-radius:50%;background:rgba(201,168,76,0.15);border:1px solid var(--gold);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;font-size:28px;}
+  .success-title{font-family:'Playfair Display',serif;font-size:26px;color:var(--gold);margin-bottom:8px;}
+  .success-sub{font-size:14px;color:var(--wh3);letter-spacing:1px;}
+  .q-remove-btn{position:absolute;top:10px;right:10px;background:rgba(240,153,123,0.1);border:0.5px solid rgba(240,153,123,0.3);color:#F0997B;border-radius:4px;font-size:11px;padding:3px 8px;cursor:pointer;letter-spacing:1px;font-family:'Barlow Condensed',sans-serif;}
+  .q-remove-btn:hover{background:rgba(240,153,123,0.2);}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">GR Consórcio</div>
+  <div class="logo-sub">Gestão de Equipes</div>
+  <div class="badge-conf">Exclusivo para Gerência</div>
+  <div class="form-title">Avaliação de Supervisão e Gestão</div>
+  <div class="form-subtitle">Suas respostas são anônimas e contribuem para a melhoria contínua da equipe.<br>Responda com honestidade.</div>
+</div>
+
+<div class="form-wrap">
+
+  <div class="id-section">
+    <div class="id-title">Identificação do Vendedor</div>
+    <div class="id-grid">
+      <div class="field-group">
+        <label class="field-label">Nome completo <span>*</span></label>
+        <input type="text" id="vendedor-nome" placeholder="Seu nome completo"/>
+        <div class="field-error" id="err-nome">Campo obrigatório</div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Equipe <span>*</span></label>
+        <select id="vendedor-equipe">
+          <option value="">Selecione sua equipe...</option>
+          <option>Danylo</option>
+          <option>Chis</option>
+          <option>Select</option>
+          <option>Extra</option>
+        </select>
+        <div class="field-error" id="err-equipe">Campo obrigatório</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-info">
+      <span>Progresso do questionário</span>
+      <span id="progress-label">0 / 14</span>
+    </div>
+    <div class="progress-bar-bg"><div class="progress-bar-fg" id="progressBar"></div></div>
+  </div>
+
+  <div id="questionsWrap">
+
+    <div class="q-card" id="q1">
+      <div class="q-num">Questão 01</div>
+      <div class="q-type-badge fechada">Resposta fechada</div>
+      <div class="q-text">Como você avalia o trabalho do seu supervisor?</div>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q1" value="Excelente"/><span class="option-radio"></span>Excelente</label>
+        <label class="option-label"><input type="radio" name="q1" value="Bom"/><span class="option-radio"></span>Bom</label>
+        <label class="option-label"><input type="radio" name="q1" value="Regular"/><span class="option-radio"></span>Regular</label>
+        <label class="option-label"><input type="radio" name="q1" value="Ruim"/><span class="option-radio"></span>Ruim</label>
+      </div>
+      <div class="error-msg" id="err-q1">Por favor, selecione uma opção.</div>
+    </div>
+
+    <div class="q-card" id="q2">
+      <div class="q-num">Questão 02</div>
+      <div class="q-type-badge fechada">Resposta fechada</div>
+      <div class="q-text">O suporte que você recebe do seu supervisor é:</div>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q2" value="Sempre presente e eficiente"/><span class="option-radio"></span>Sempre presente e eficiente</label>
+        <label class="option-label"><input type="radio" name="q2" value="Presente na maioria das vezes"/><span class="option-radio"></span>Presente na maioria das vezes</label>
+        <label class="option-label"><input type="radio" name="q2" value="Pouco presente"/><span class="option-radio"></span>Pouco presente</label>
+        <label class="option-label"><input type="radio" name="q2" value="Quase inexistente"/><span class="option-radio"></span>Quase inexistente</label>
+      </div>
+      <div class="error-msg" id="err-q2">Por favor, selecione uma opção.</div>
+    </div>
+
+    <div class="q-card" id="q3">
+      <div class="q-num">Questão 03</div>
+      <div class="q-type-badge fechada">Resposta fechada</div>
+      <div class="q-text">Seu supervisor te ajuda a melhorar seus resultados?</div>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q3" value="Muito"/><span class="option-radio"></span>Muito</label>
+        <label class="option-label"><input type="radio" name="q3" value="Às vezes"/><span class="option-radio"></span>Às vezes</label>
+        <label class="option-label"><input type="radio" name="q3" value="Pouco"/><span class="option-radio"></span>Pouco</label>
+        <label class="option-label"><input type="radio" name="q3" value="Não ajuda"/><span class="option-radio"></span>Não ajuda</label>
+      </div>
+      <div class="error-msg" id="err-q3">Por favor, selecione uma opção.</div>
+    </div>
+
+    <div class="q-card" id="q4">
+      <div class="q-num">Questão 04</div>
+      <div class="q-type-badge fechada">Resposta fechada</div>
+      <div class="q-text">Como é a comunicação com seu supervisor?</div>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q4" value="Clara e objetiva"/><span class="option-radio"></span>Clara e objetiva</label>
+        <label class="option-label"><input type="radio" name="q4" value="Boa, mas pode melhorar"/><span class="option-radio"></span>Boa, mas pode melhorar</label>
+        <label class="option-label"><input type="radio" name="q4" value="Confusa"/><span class="option-radio"></span>Confusa</label>
+        <label class="option-label"><input type="radio" name="q4" value="Ruim"/><span class="option-radio"></span>Ruim</label>
+      </div>
+      <div class="error-msg" id="err-q4">Por favor, selecione uma opção.</div>
+    </div>
+
+    <div class="q-card" id="q5">
+      <div class="q-num">Questão 05</div>
+      <div class="q-type-badge fechada">Resposta fechada</div>
+      <div class="q-text">Você se sente respeitado(a) pelo seu supervisor?</div>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q5" value="Sempre"/><span class="option-radio"></span>Sempre</label>
+        <label class="option-label"><input type="radio" name="q5" value="Na maioria das vezes"/><span class="option-radio"></span>Na maioria das vezes</label>
+        <label class="option-label"><input type="radio" name="q5" value="Às vezes"/><span class="option-radio"></span>Às vezes</label>
+        <label class="option-label"><input type="radio" name="q5" value="Nunca"/><span class="option-radio"></span>Nunca</label>
+      </div>
+      <div class="error-msg" id="err-q5">Por favor, selecione uma opção.</div>
+    </div>
+
+    <div class="q-card" id="q6">
+      <div class="q-num">Questão 06</div>
+      <div class="q-type-badge fechada">Resposta fechada</div>
+      <div class="q-text">Seu supervisor resolve problemas com agilidade?</div>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q6" value="Sempre"/><span class="option-radio"></span>Sempre</label>
+        <label class="option-label"><input type="radio" name="q6" value="Na maioria das vezes"/><span class="option-radio"></span>Na maioria das vezes</label>
+        <label class="option-label"><input type="radio" name="q6" value="Raramente"/><span class="option-radio"></span>Raramente</label>
+        <label class="option-label"><input type="radio" name="q6" value="Nunca"/><span class="option-radio"></span>Nunca</label>
+      </div>
+      <div class="error-msg" id="err-q6">Por favor, selecione uma opção.</div>
+    </div>
+
+    <div class="q-card" id="q7">
+      <div class="q-num">Questão 07</div>
+      <div class="q-type-badge fechada">Resposta fechada</div>
+      <div class="q-text">Você sente que seu supervisor se preocupa com seu desenvolvimento profissional?</div>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q7" value="Sim, muito"/><span class="option-radio"></span>Sim, muito</label>
+        <label class="option-label"><input type="radio" name="q7" value="Um pouco"/><span class="option-radio"></span>Um pouco</label>
+        <label class="option-label"><input type="radio" name="q7" value="Quase nada"/><span class="option-radio"></span>Quase nada</label>
+        <label class="option-label"><input type="radio" name="q7" value="Não"/><span class="option-radio"></span>Não</label>
+      </div>
+      <div class="error-msg" id="err-q7">Por favor, selecione uma opção.</div>
+    </div>
+
+    <div class="q-card" id="q8">
+      <div class="q-num">Questão 08</div>
+      <div class="q-type-badge fechada">Resposta fechada</div>
+      <div class="q-text">O ambiente da sua equipe é saudável?</div>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q8" value="Muito saudável"/><span class="option-radio"></span>Muito saudável</label>
+        <label class="option-label"><input type="radio" name="q8" value="Razoável"/><span class="option-radio"></span>Razoável</label>
+        <label class="option-label"><input type="radio" name="q8" value="Pouco saudável"/><span class="option-radio"></span>Pouco saudável</label>
+        <label class="option-label"><input type="radio" name="q8" value="Tóxico"/><span class="option-radio"></span>Tóxico</label>
+      </div>
+      <div class="error-msg" id="err-q8">Por favor, selecione uma opção.</div>
+    </div>
+
+    <div class="q-card" id="q9">
+      <div class="q-num">Questão 09</div>
+      <div class="q-type-badge fechada">Resposta fechada</div>
+      <div class="q-text">Você trocaria de equipe por causa da gestão?</div>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q9" value="Sim"/><span class="option-radio"></span>Sim</label>
+        <label class="option-label"><input type="radio" name="q9" value="Talvez"/><span class="option-radio"></span>Talvez</label>
+        <label class="option-label"><input type="radio" name="q9" value="Não"/><span class="option-radio"></span>Não</label>
+      </div>
+      <div class="error-msg" id="err-q9">Por favor, selecione uma opção.</div>
+    </div>
+
+    <div class="q-card" id="q10">
+      <div class="q-num">Questão 10</div>
+      <div class="q-type-badge aberta">Resposta aberta</div>
+      <div class="q-text">O que seu supervisor faz de melhor?</div>
+      <textarea id="resp-q10" placeholder="Escreva sua resposta aqui..." oninput="updateProgress()"></textarea>
+      <div class="error-msg" id="err-q10">Por favor, escreva sua resposta.</div>
+    </div>
+
+    <div class="q-card" id="q11">
+      <div class="q-num">Questão 11</div>
+      <div class="q-type-badge aberta">Resposta aberta</div>
+      <div class="q-text">O que ele(a) precisa melhorar?</div>
+      <textarea id="resp-q11" placeholder="Escreva sua resposta aqui..." oninput="updateProgress()"></textarea>
+      <div class="error-msg" id="err-q11">Por favor, escreva sua resposta.</div>
+    </div>
+
+    <div class="q-card" id="q12">
+      <div class="q-num">Questão 12</div>
+      <div class="q-type-badge numerica">Resposta numérica</div>
+      <div class="q-text">De 0 a 10, qual nota você daria para seu supervisor?</div>
+      <div class="rating-wrap">
+        <div class="rating-scale" id="ratingScale">
+          <button class="rating-btn" onclick="selectRating(0)">0</button>
+          <button class="rating-btn" onclick="selectRating(1)">1</button>
+          <button class="rating-btn" onclick="selectRating(2)">2</button>
+          <button class="rating-btn" onclick="selectRating(3)">3</button>
+          <button class="rating-btn" onclick="selectRating(4)">4</button>
+          <button class="rating-btn" onclick="selectRating(5)">5</button>
+          <button class="rating-btn" onclick="selectRating(6)">6</button>
+          <button class="rating-btn" onclick="selectRating(7)">7</button>
+          <button class="rating-btn" onclick="selectRating(8)">8</button>
+          <button class="rating-btn" onclick="selectRating(9)">9</button>
+          <button class="rating-btn" onclick="selectRating(10)">10</button>
+        </div>
+        <div class="rating-labels"><span>Péssimo</span><span>Excelente</span></div>
+      </div>
+      <div class="error-msg" id="err-q12">Por favor, selecione uma nota.</div>
+    </div>
+
+    <div class="q-card" id="q13">
+      <div class="q-num">Questão 13</div>
+      <div class="q-type-badge fechada">Resposta fechada</div>
+      <div class="q-text">Você já se sentiu pressionado(a), orientado(a) ou induzido(a) por sua gestão a adotar práticas que possam violar normas internas, políticas da empresa ou a legislação vigente?</div>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q13" value="Sim"/><span class="option-radio"></span>Sim</label>
+        <label class="option-label"><input type="radio" name="q13" value="Não"/><span class="option-radio"></span>Não</label>
+        <label class="option-label"><input type="radio" name="q13" value="Prefiro não responder"/><span class="option-radio"></span>Prefiro não responder</label>
+      </div>
+      <div class="error-msg" id="err-q13">Por favor, selecione uma opção.</div>
+    </div>
+
+    <div class="q-card" id="q14">
+      <div class="q-num">Questão 14</div>
+      <div class="q-type-badge fechada">Resposta fechada</div>
+      <div class="q-text">Em algum momento, sua gestão já sugeriu, incentivou ou tolerou condutas que possam ser consideradas inadequadas, antiéticas ou em desacordo com normas internas ou legislação aplicável?</div>
+      <div class="options">
+        <label class="option-label"><input type="radio" name="q14" value="Sim"/><span class="option-radio"></span>Sim</label>
+        <label class="option-label"><input type="radio" name="q14" value="Não"/><span class="option-radio"></span>Não</label>
+        <label class="option-label"><input type="radio" name="q14" value="Prefiro não responder"/><span class="option-radio"></span>Prefiro não responder</label>
+      </div>
+      <div class="error-msg" id="err-q14">Por favor, selecione uma opção.</div>
+    </div>
+
+    <!-- PERGUNTAS DINÂMICAS -->
+    <div id="dynamicQuestions"></div>
+
+  </div><!-- end questionsWrap -->
+
+  <!-- PAINEL ADICIONAR PERGUNTA -->
+  <div class="add-panel">
+    <div class="add-panel-title">Adicionar nova pergunta ao questionário</div>
+
+    <div class="field-group" style="margin-bottom:10px;">
+      <label class="field-label">Texto da pergunta <span style="color:var(--gold)">*</span></label>
+      <input type="text" id="new-q-text" placeholder="Digite a pergunta..."/>
+    </div>
+
+    <div class="field-group" style="margin-bottom:12px;">
+      <label class="field-label">Tipo de resposta</label>
+      <select id="new-q-type" onchange="toggleNewQOptions()">
+        <option value="fechada">Fechada (opções de múltipla escolha)</option>
+        <option value="aberta">Aberta (texto livre)</option>
+      </select>
+    </div>
+
+    <div id="new-q-options-wrap">
+      <label class="field-label" style="margin-bottom:8px;">Opções de resposta</label>
+      <div id="new-q-options-list">
+        <input type="text" class="new-opt" placeholder="Opção 1" style="margin-bottom:6px;"/>
+        <input type="text" class="new-opt" placeholder="Opção 2" style="margin-bottom:6px;"/>
+        <input type="text" class="new-opt" placeholder="Opção 3" style="margin-bottom:6px;"/>
+      </div>
+      <button class="btn-add small-add" onclick="addOptionField()">+ Adicionar opção</button>
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap;">
+      <button class="btn-add primary" style="flex:1;min-width:140px;" onclick="addQuestion()">+ Adicionar pergunta</button>
+      <button class="btn-add secondary" style="flex:1;min-width:140px;" onclick="saveQuestionsToFirebase()">Salvar perguntas no Firebase</button>
+    </div>
+    <div class="add-status" id="add-status"></div>
+  </div>
+
+  <!-- SUBMIT -->
+  <div class="submit-wrap">
+    <button class="submit-btn" onclick="submitForm()">Enviar Avaliação</button>
+    <div class="submit-note">Suas respostas são confidenciais e serão analisadas pela gerência.</div>
+  </div>
+
+  <!-- SUCCESS -->
+  <div class="success-screen" id="successScreen">
+    <div class="success-icon">✓</div>
+    <div class="success-title">Avaliação Enviada!</div>
+    <div class="success-sub">Obrigado pela sua resposta.<br>Sua avaliação foi registrada com sucesso.</div>
+    <div style="margin-top:2rem;background:var(--bk2);border:0.5px solid var(--bd);border-radius:10px;padding:1.2rem;text-align:left;font-size:13px;color:var(--wh3);line-height:1.8;" id="resumo"></div>
+  </div>
+
+</div><!-- end form-wrap -->
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyAE3NsqIpvgtnEs2wocIfEAdzbzsvbTtfk",
+  authDomain:"gerencia-10f1b.firebaseapp.com",
+  projectId:"gerencia-10f1b",
+  storageBucket:"gerencia-10f1b.firebasestorage.app",
+  messagingSenderId:"198929448777",
+  appId:"1:198929448777:web:5787e54693a595241f6498",
+  measurementId:"G-91CDTGZ2LT"
+});
+const db = firebase.firestore();
+
+// ── ESTADO ────────────────────────────────────────────────
+let selectedRating = null;
+let dynamicQuestions = []; // {id, texto, tipo, opcoes}
+let dynCounter = 0;
+const BASE_TOTAL = 14;
+
+// ── PROGRESS ─────────────────────────────────────────────
+function updateProgress() {
+  let answered = 0;
+  const total = BASE_TOTAL + dynamicQuestions.length;
+  for (let i = 1; i <= 9; i++) { if (document.querySelector(`input[name="q${i}"]:checked`)) answered++; }
+  for (let i = 13; i <= 14; i++) { if (document.querySelector(`input[name="q${i}"]:checked`)) answered++; }
+  if (document.getElementById('resp-q10').value.trim()) answered++;
+  if (document.getElementById('resp-q11').value.trim()) answered++;
+  if (selectedRating !== null) answered++;
+  dynamicQuestions.forEach(q => {
+    if (q.tipo === 'fechada') { if (document.querySelector(`input[name="${q.id}"]:checked`)) answered++; }
+    else { const ta = document.getElementById('resp-'+q.id); if (ta && ta.value.trim()) answered++; }
+  });
+  document.getElementById('progress-label').textContent = answered + ' / ' + total;
+  document.getElementById('progressBar').style.width = (answered / total * 100) + '%';
+  // mark static cards
+  for (let i = 1; i <= 9; i++) { if (document.querySelector(`input[name="q${i}"]:checked`)) document.getElementById('q'+i).classList.add('answered'); }
+  for (let i = 13; i <= 14; i++) { if (document.querySelector(`input[name="q${i}"]:checked`)) document.getElementById('q'+i).classList.add('answered'); }
+  if (document.getElementById('resp-q10').value.trim()) document.getElementById('q10').classList.add('answered');
+  if (document.getElementById('resp-q11').value.trim()) document.getElementById('q11').classList.add('answered');
+}
+
+document.querySelectorAll('input[type="radio"]').forEach(r => r.addEventListener('change', updateProgress));
+
+// ── RATING ────────────────────────────────────────────────
+function selectRating(val) {
+  selectedRating = val;
+  document.querySelectorAll('.rating-btn').forEach((b,i) => b.classList.toggle('selected', i === val));
+  document.getElementById('q12').classList.add('answered');
+  document.getElementById('q12').classList.remove('error');
+  document.getElementById('err-q12').style.display = 'none';
+  updateProgress();
+}
+
+// ── ADD QUESTION PANEL ────────────────────────────────────
+function toggleNewQOptions() {
+  const tipo = document.getElementById('new-q-type').value;
+  document.getElementById('new-q-options-wrap').style.display = tipo === 'fechada' ? 'block' : 'none';
+}
+
+function addOptionField() {
+  const list = document.getElementById('new-q-options-list');
+  const count = list.querySelectorAll('.new-opt').length + 1;
+  const inp = document.createElement('input');
+  inp.type = 'text';
+  inp.className = 'new-opt';
+  inp.placeholder = 'Opção ' + count;
+  inp.style.marginBottom = '6px';
+  list.appendChild(inp);
+}
+
+function addQuestion() {
+  const texto = document.getElementById('new-q-text').value.trim();
+  const tipo = document.getElementById('new-q-type').value;
+  const status = document.getElementById('add-status');
+
+  if (!texto) { status.textContent = 'Digite o texto da pergunta.'; status.className = 'add-status err'; return; }
+
+  let opcoes = [];
+  if (tipo === 'fechada') {
+    opcoes = Array.from(document.querySelectorAll('.new-opt')).map(i => i.value.trim()).filter(Boolean);
+    if (opcoes.length < 2) { status.textContent = 'Adicione pelo menos 2 opções.'; status.className = 'add-status err'; return; }
+  }
+
+  dynCounter++;
+  const qId = 'dyn_' + dynCounter;
+  const qNum = BASE_TOTAL + dynamicQuestions.length + 1;
+  dynamicQuestions.push({ id: qId, texto, tipo, opcoes, num: qNum });
+
+  // Render
+  renderDynamicQuestion({ id: qId, texto, tipo, opcoes, num: qNum });
+
+  // Reset form
+  document.getElementById('new-q-text').value = '';
+  document.getElementById('new-q-options-list').innerHTML = `
+    <input type="text" class="new-opt" placeholder="Opção 1" style="margin-bottom:6px;"/>
+    <input type="text" class="new-opt" placeholder="Opção 2" style="margin-bottom:6px;"/>
+    <input type="text" class="new-opt" placeholder="Opção 3" style="margin-bottom:6px;"/>`;
+  document.getElementById('new-q-type').value = 'fechada';
+  toggleNewQOptions();
+
+  status.textContent = 'Pergunta ' + qNum + ' adicionada! Clique em "Salvar no Firebase" para persistir.';
+  status.className = 'add-status ok';
+  updateProgress();
+}
+
+function renderDynamicQuestion(q) {
+  const container = document.getElementById('dynamicQuestions');
+  const card = document.createElement('div');
+  card.className = 'q-card dynamic';
+  card.id = 'card-' + q.id;
+
+  let content = '';
+  if (q.tipo === 'fechada') {
+    content = `<div class="options">` +
+      q.opcoes.map(op => `<label class="option-label"><input type="radio" name="${q.id}" value="${op}" onchange="updateProgress()"/><span class="option-radio"></span>${op}</label>`).join('') +
+      `</div><div class="error-msg" id="err-${q.id}">Por favor, selecione uma opção.</div>`;
+  } else {
+    content = `<textarea id="resp-${q.id}" placeholder="Escreva sua resposta aqui..." oninput="updateProgress()"></textarea>
+      <div class="error-msg" id="err-${q.id}">Por favor, escreva sua resposta.</div>`;
+  }
+
+  card.innerHTML = `
+    <button class="q-remove-btn" onclick="removeQuestion('${q.id}')">✕ Remover</button>
+    <div class="q-num">Questão ${String(q.num).padStart(2,'0')}</div>
+    <div class="q-type-badge ${q.tipo}">${q.tipo === 'fechada' ? 'Resposta fechada' : 'Resposta aberta'}</div>
+    <div class="q-text">${q.texto}</div>
+    ${content}`;
+  container.appendChild(card);
+}
+
+function removeQuestion(qId) {
+  const idx = dynamicQuestions.findIndex(q => q.id === qId);
+  if (idx === -1) return;
+  dynamicQuestions.splice(idx, 1);
+  document.getElementById('card-' + qId).remove();
+  // renumber
+  dynamicQuestions.forEach((q, i) => {
+    q.num = BASE_TOTAL + i + 1;
+    const card = document.getElementById('card-' + q.id);
+    if (card) card.querySelector('.q-num').textContent = 'Questão ' + String(q.num).padStart(2,'0');
+  });
+  document.getElementById('add-status').textContent = 'Pergunta removida.';
+  document.getElementById('add-status').className = 'add-status';
+  updateProgress();
+}
+
+async function saveQuestionsToFirebase() {
+  const status = document.getElementById('add-status');
+  status.textContent = 'Salvando...';
+  status.className = 'add-status';
+  try {
+    await db.collection('configuracoes').doc('perguntas_extras').set({
+      perguntas: dynamicQuestions,
+      atualizadoEm: new Date().toLocaleString('pt-BR')
+    });
+    status.textContent = '✓ Perguntas salvas no Firebase com sucesso!';
+    status.className = 'add-status ok';
+  } catch(e) {
+    status.textContent = 'Erro: ' + e.message;
+    status.className = 'add-status err';
+  }
+}
+
+// Carrega perguntas extras do Firebase ao abrir
+window.addEventListener('load', async () => {
+  try {
+    const doc = await db.collection('configuracoes').doc('perguntas_extras').get();
+    if (doc.exists) {
+      const data = doc.data();
+      if (data.perguntas && data.perguntas.length > 0) {
+        data.perguntas.forEach(q => {
+          dynCounter++;
+          q.id = 'dyn_' + dynCounter;
+          q.num = BASE_TOTAL + dynamicQuestions.length + 1;
+          dynamicQuestions.push(q);
+          renderDynamicQuestion(q);
+        });
+        document.getElementById('add-status').textContent = dynamicQuestions.length + ' pergunta(s) carregada(s) do Firebase.';
+        document.getElementById('add-status').className = 'add-status ok';
+        updateProgress();
+      }
+    }
+  } catch(e) { console.log('Sem perguntas extras salvas.'); }
+});
+
+// ── SUBMIT ────────────────────────────────────────────────
+async function submitForm() {
+  let valid = true;
+
+  const nome = document.getElementById('vendedor-nome').value.trim();
+  if (!nome) {
+    document.getElementById('err-nome').style.display = 'block';
+    document.getElementById('vendedor-nome').style.borderColor = 'rgba(240,153,123,0.6)';
+    valid = false;
+  } else {
+    document.getElementById('err-nome').style.display = 'none';
+    document.getElementById('vendedor-nome').style.borderColor = '';
+  }
+
+  const equipe = document.getElementById('vendedor-equipe').value;
+  if (!equipe) {
+    document.getElementById('err-equipe').style.display = 'block';
+    document.getElementById('vendedor-equipe').style.borderColor = 'rgba(240,153,123,0.6)';
+    valid = false;
+  } else {
+    document.getElementById('err-equipe').style.display = 'none';
+    document.getElementById('vendedor-equipe').style.borderColor = '';
+  }
+
+  for (let i = 1; i <= 9; i++) {
+    const checked = document.querySelector(`input[name="q${i}"]:checked`);
+    const card = document.getElementById('q'+i);
+    if (!checked) { document.getElementById('err-q'+i).style.display='block'; card.classList.add('error'); valid=false; }
+    else { document.getElementById('err-q'+i).style.display='none'; card.classList.remove('error'); }
+  }
+  for (let i = 13; i <= 14; i++) {
+    const checked = document.querySelector(`input[name="q${i}"]:checked`);
+    const card = document.getElementById('q'+i);
+    if (!checked) { document.getElementById('err-q'+i).style.display='block'; card.classList.add('error'); valid=false; }
+    else { document.getElementById('err-q'+i).style.display='none'; card.classList.remove('error'); }
+  }
+  ['q10','q11'].forEach(id => {
+    const ta = document.getElementById('resp-'+id);
+    const card = document.getElementById(id);
+    if (!ta.value.trim()) { document.getElementById('err-'+id).style.display='block'; card.classList.add('error'); valid=false; }
+    else { document.getElementById('err-'+id).style.display='none'; card.classList.remove('error'); }
+  });
+  if (selectedRating === null) {
+    document.getElementById('err-q12').style.display='block'; document.getElementById('q12').classList.add('error'); valid=false;
+  } else {
+    document.getElementById('err-q12').style.display='none'; document.getElementById('q12').classList.remove('error');
+  }
+  // validate dynamic
+  dynamicQuestions.forEach(q => {
+    const card = document.getElementById('card-'+q.id);
+    const err = document.getElementById('err-'+q.id);
+    let ok = false;
+    if (q.tipo === 'fechada') ok = !!document.querySelector(`input[name="${q.id}"]:checked`);
+    else { const ta = document.getElementById('resp-'+q.id); ok = ta && !!ta.value.trim(); }
+    if (!ok) { if(err) err.style.display='block'; if(card) card.classList.add('error'); valid=false; }
+    else { if(err) err.style.display='none'; if(card) card.classList.remove('error'); }
+  });
+
+  if (!valid) {
+    const firstErr = document.querySelector('.q-card.error');
+    if (firstErr) firstErr.scrollIntoView({ behavior:'smooth', block:'center' });
+    return;
+  }
+
+  // Collect
+  const respostas = {
+    nome, equipe,
+    q1: document.querySelector('input[name="q1"]:checked').value,
+    q2: document.querySelector('input[name="q2"]:checked').value,
+    q3: document.querySelector('input[name="q3"]:checked').value,
+    q4: document.querySelector('input[name="q4"]:checked').value,
+    q5: document.querySelector('input[name="q5"]:checked').value,
+    q6: document.querySelector('input[name="q6"]:checked').value,
+    q7: document.querySelector('input[name="q7"]:checked').value,
+    q8: document.querySelector('input[name="q8"]:checked').value,
+    q9: document.querySelector('input[name="q9"]:checked').value,
+    q10: document.getElementById('resp-q10').value.trim(),
+    q11: document.getElementById('resp-q11').value.trim(),
+    q12: selectedRating,
+    q13: document.querySelector('input[name="q13"]:checked').value,
+    q14: document.querySelector('input[name="q14"]:checked').value,
+    dataHora: new Date().toLocaleString('pt-BR')
+  };
+  dynamicQuestions.forEach(q => {
+    if (q.tipo === 'fechada') respostas[q.id] = document.querySelector(`input[name="${q.id}"]:checked`).value;
+    else respostas[q.id] = document.getElementById('resp-'+q.id).value.trim();
+    respostas[q.id + '_pergunta'] = q.texto;
+  });
+
+  const btn = document.querySelector('.submit-btn');
+  btn.textContent = 'Enviando...';
+  btn.disabled = true;
+
+  try {
+    await db.collection('avaliacoes').add(respostas);
+    document.getElementById('questionsWrap').style.display='none';
+    document.querySelector('.submit-wrap').style.display='none';
+    document.querySelector('.progress-wrap').style.display='none';
+    document.querySelector('.id-section').style.display='none';
+    document.querySelector('.add-panel').style.display='none';
+    document.getElementById('resumo').innerHTML = `
+      <strong style="color:var(--gold);letter-spacing:2px;font-size:11px;text-transform:uppercase;">Resumo da avaliação</strong><br><br>
+      <span style="color:var(--wh2)">Vendedor:</span> ${respostas.nome}<br>
+      <span style="color:var(--wh2)">Equipe:</span> ${respostas.equipe}<br>
+      <span style="color:var(--wh2)">Nota ao supervisor:</span> <strong style="color:var(--gold);font-size:16px">${respostas.q12}/10</strong><br>
+      <span style="color:var(--wh2)">Pressão por irregularidades:</span> ${respostas.q13}<br>
+      <span style="color:var(--wh2)">Data:</span> ${respostas.dataHora}<br>
+      <span style="color:#5DCAA5;font-size:11px;letter-spacing:1px;">✓ Salvo no Firebase com sucesso</span>`;
+    document.getElementById('successScreen').style.display='block';
+    window.scrollTo({ top:0, behavior:'smooth' });
+  } catch(e) {
+    btn.textContent='Enviar Avaliação'; btn.disabled=false;
+    alert('Erro ao salvar: '+e.message);
+  }
+}
+</script>
+</body>
+</html>
