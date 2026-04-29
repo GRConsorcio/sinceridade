@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ADM – GR Consórcio</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Barlow+Condensed:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --gold:#C9A84C;--gold-light:#E8C97A;--gold-dark:#8B6914;
+    --bk:#0A0A0A;--bk2:#111111;--bk3:#1A1A1A;--bk4:#222222;
+    --wh:#F5F0E8;--wh2:#DDD8CC;--wh3:#AAAAAA;
+    --bd:rgba(201,168,76,0.2);--bd2:rgba(201,168,76,0.4);
+    --green:#5DCAA5;--red:#F0997B;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bk);color:var(--wh);font-family:'Barlow Condensed',sans-serif;min-height:100vh;}
+  body::before{content:'ADM';position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) rotate(-35deg);font-family:'Playfair Display',serif;font-size:200px;font-weight:900;letter-spacing:30px;color:rgba(201,168,76,0.025);pointer-events:none;z-index:0;white-space:nowrap;}
+
+  /* ── LOGIN ── */
+  #loginScreen{position:fixed;inset:0;background:var(--bk);z-index:100;display:flex;align-items:center;justify-content:center;padding:2rem;}
+  .login-box{background:var(--bk2);border:1px solid var(--bd2);border-radius:16px;padding:3rem 2.5rem;width:100%;max-width:400px;text-align:center;position:relative;overflow:hidden;}
+  .login-box::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:200px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+  .login-logo{font-family:'Playfair Display',serif;font-size:28px;font-weight:900;letter-spacing:4px;color:var(--gold);text-transform:uppercase;margin-bottom:4px;}
+  .login-sub{font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--wh3);margin-bottom:2rem;}
+  .login-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--wh3);text-align:left;display:block;margin-bottom:8px;}
+  .login-input{width:100%;background:var(--bk3);border:0.5px solid var(--bd);border-radius:8px;color:var(--wh);font-family:'Barlow Condensed',sans-serif;font-size:18px;padding:12px 16px;outline:none;transition:border-color .2s;letter-spacing:3px;text-align:center;}
+  .login-input:focus{border-color:var(--gold);}
+  .login-btn{width:100%;margin-top:1.5rem;background:var(--gold);color:var(--bk);border:none;border-radius:8px;padding:14px;font-family:'Playfair Display',serif;font-size:15px;font-weight:700;letter-spacing:3px;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+  .login-btn:hover{background:var(--gold-light);}
+  .login-err{color:var(--red);font-size:11px;letter-spacing:2px;margin-top:10px;display:none;}
+  .lock-icon{font-size:36px;margin-bottom:1.5rem;opacity:.6;}
+
+  /* ── PAINEL ── */
+  #adminPanel{display:none;position:relative;z-index:1;}
+  .header{background:var(--bk2);border-bottom:1px solid var(--bd);padding:1.5rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem;}
+  .header-left{display:flex;flex-direction:column;}
+  .logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:900;letter-spacing:4px;color:var(--gold);text-transform:uppercase;}
+  .logo-sub{font-size:9px;letter-spacing:4px;color:var(--wh3);text-transform:uppercase;margin-top:2px;}
+  .badge-adm{display:inline-flex;align-items:center;gap:6px;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);border:0.5px solid var(--bd2);padding:4px 12px;border-radius:20px;background:rgba(201,168,76,0.08);margin-top:8px;width:fit-content;}
+  .badge-adm::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gold);animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+  .logout-btn{background:transparent;color:var(--wh3);border:0.5px solid var(--bd);border-radius:6px;padding:8px 18px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .15s;}
+  .logout-btn:hover{border-color:var(--red);color:var(--red);}
+
+  .content{max-width:1200px;margin:0 auto;padding:2rem 1.5rem;}
+
+  /* ── STATS ── */
+  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:1rem;margin-bottom:2rem;}
+  .stat-card{background:var(--bk2);border:0.5px solid var(--bd);border-radius:10px;padding:1.2rem 1.5rem;position:relative;overflow:hidden;}
+  .stat-card::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--gold),var(--gold-dark));}
+  .stat-val{font-family:'Playfair Display',serif;font-size:32px;font-weight:900;color:var(--gold);line-height:1;}
+  .stat-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--wh3);margin-top:6px;}
+  .stat-card.green::before{background:linear-gradient(180deg,var(--green),#3a8a6e);}
+  .stat-card.green .stat-val{color:var(--green);}
+  .stat-card.red::before{background:linear-gradient(180deg,var(--red),#c0604a);}
+  .stat-card.red .stat-val{color:var(--red);}
+
+  /* ── FILTROS ── */
+  .filters{background:var(--bk2);border:0.5px solid var(--bd);border-radius:10px;padding:1rem 1.5rem;margin-bottom:1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;}
+  .filter-label{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--wh3);flex-shrink:0;}
+  .filter-btn{background:transparent;color:var(--wh2);border:0.5px solid var(--bd);border-radius:20px;padding:5px 16px;font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:1px;cursor:pointer;transition:all .15s;}
+  .filter-btn:hover,.filter-btn.active{background:rgba(201,168,76,0.12);border-color:var(--gold);color:var(--gold);}
+  .refresh-btn{margin-left:auto;background:transparent;color:var(--wh3);border:0.5px solid var(--bd);border-radius:6px;padding:6px 14px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;transition:all .15s;}
+  .refresh-btn:hover{border-color:var(--gold);color:var(--gold);}
+
+  /* ── TABELA ── */
+  .table-wrap{background:var(--bk2);border:0.5px solid var(--bd);border-radius:12px;overflow:hidden;}
+  .table-head{display:grid;grid-template-columns:180px 110px 80px 90px 90px 1fr 100px;padding:12px 16px;background:var(--bk3);border-bottom:0.5px solid var(--bd);}
+  .th{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--gold);font-weight:600;}
+  .resp-row{display:grid;grid-template-columns:180px 110px 80px 90px 90px 1fr 100px;padding:14px 16px;border-bottom:0.5px solid rgba(201,168,76,0.08);transition:background .15s;cursor:pointer;align-items:center;}
+  .resp-row:last-child{border-bottom:none;}
+  .resp-row:hover{background:rgba(201,168,76,0.04);}
+  .td{font-size:13px;color:var(--wh2);letter-spacing:.3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+  .td.nome{color:var(--wh);font-weight:500;}
+  .td.data{font-size:11px;color:var(--wh3);}
+  .nota-badge{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:50%;font-weight:700;font-size:14px;border:1.5px solid;}
+  .nota-alta{color:var(--green);border-color:var(--green);background:rgba(93,202,165,0.1);}
+  .nota-media{color:var(--gold);border-color:var(--gold);background:rgba(201,168,76,0.1);}
+  .nota-baixa{color:var(--red);border-color:var(--red);background:rgba(240,153,123,0.1);}
+  .pressao-badge{font-size:10px;letter-spacing:1px;padding:3px 10px;border-radius:10px;}
+  .pressao-sim{background:rgba(240,153,123,0.12);color:var(--red);border:0.5px solid rgba(240,153,123,0.3);}
+  .pressao-nao{background:rgba(93,202,165,0.1);color:var(--green);border:0.5px solid rgba(93,202,165,0.2);}
+  .pressao-pnr{background:rgba(201,168,76,0.08);color:var(--gold);border:0.5px solid var(--bd);}
+  .ver-btn{background:transparent;color:var(--gold);border:0.5px solid var(--bd2);border-radius:6px;padding:5px 12px;font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1px;cursor:pointer;transition:all .15s;}
+  .ver-btn:hover{background:rgba(201,168,76,0.1);}
+
+  .loading{text-align:center;padding:3rem;color:var(--wh3);font-size:12px;letter-spacing:3px;text-transform:uppercase;}
+  .empty{text-align:center;padding:3rem;color:var(--wh3);}
+  .empty-icon{font-size:36px;margin-bottom:1rem;opacity:.4;}
+  .empty-text{font-size:12px;letter-spacing:2px;text-transform:uppercase;}
+
+  /* ── MODAL DETALHE ── */
+  .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:200;display:none;align-items:center;justify-content:center;padding:1.5rem;overflow-y:auto;}
+  .modal-overlay.open{display:flex;}
+  .modal{background:var(--bk2);border:1px solid var(--bd2);border-radius:16px;width:100%;max-width:680px;max-height:90vh;overflow-y:auto;position:relative;}
+  .modal::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:200px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+  .modal-header{padding:1.5rem 1.5rem 1rem;border-bottom:0.5px solid var(--bd);display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;}
+  .modal-name{font-family:'Playfair Display',serif;font-size:20px;color:var(--gold);}
+  .modal-meta{font-size:11px;color:var(--wh3);letter-spacing:1px;margin-top:4px;}
+  .modal-close{background:transparent;border:0.5px solid var(--bd);color:var(--wh3);border-radius:6px;width:30px;height:30px;cursor:pointer;font-size:14px;flex-shrink:0;transition:all .15s;}
+  .modal-close:hover{border-color:var(--red);color:var(--red);}
+  .modal-body{padding:1.5rem;}
+  .modal-section{margin-bottom:1.5rem;}
+  .modal-section-title{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:12px;padding-bottom:6px;border-bottom:0.5px solid var(--bd);}
+  .modal-qa{margin-bottom:12px;}
+  .modal-q{font-size:11px;letter-spacing:1px;color:var(--wh3);text-transform:uppercase;margin-bottom:4px;}
+  .modal-a{font-size:14px;color:var(--wh);background:var(--bk3);border-radius:6px;padding:8px 12px;border-left:2px solid var(--gold);}
+  .modal-a.alert{border-left-color:var(--red);color:#ffb3a0;}
+  .nota-grande{font-family:'Playfair Display',serif;font-size:48px;font-weight:900;color:var(--gold);line-height:1;}
+  .nota-grande.media{color:var(--gold);}
+  .nota-grande.alta{color:var(--green);}
+  .nota-grande.baixa{color:var(--red);}
+
+  @media(max-width:700px){
+    .table-head,.resp-row{grid-template-columns:1fr 90px 60px 80px;}
+    .th:nth-child(n+5),.td:nth-child(n+5){display:none;}
+    .th:nth-child(7),.td:nth-child(7){display:block;}
+  }
+  @media(max-width:440px){
+    .table-head,.resp-row{grid-template-columns:1fr 60px 80px;}
+    .th:nth-child(n+4),.td:nth-child(n+4){display:none;}
+    .th:nth-child(7),.td:nth-child(7){display:block;}
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="lock-icon">🔒</div>
+    <div class="login-logo">GR Consórcio</div>
+    <div class="login-sub">Painel Administrativo</div>
+    <label class="login-label">Senha de acesso</label>
+    <input type="password" class="login-input" id="senhaInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')entrar()"/>
+    <button class="login-btn" onclick="entrar()">Entrar</button>
+    <div class="login-err" id="loginErr">Senha incorreta. Tente novamente.</div>
+  </div>
+</div>
+
+<!-- PAINEL ADM -->
+<div id="adminPanel">
+
+  <div class="header">
+    <div class="header-left">
+      <div class="logo">GR Consórcio</div>
+      <div class="logo-sub">Painel Administrativo · Avaliações</div>
+      <div class="badge-adm">Acesso Restrito — ADM</div>
+    </div>
+    <button class="logout-btn" onclick="sair()">✕ Sair</button>
+  </div>
+
+  <div class="content">
+
+    <!-- STATS -->
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card">
+        <div class="stat-val" id="statTotal">—</div>
+        <div class="stat-label">Total de respostas</div>
+      </div>
+      <div class="stat-card green">
+        <div class="stat-val" id="statMedia">—</div>
+        <div class="stat-label">Nota média dos supervisores</div>
+      </div>
+      <div class="stat-card red">
+        <div class="stat-val" id="statPressao">—</div>
+        <div class="stat-label">Relataram pressão por irregularidades</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="statRecente">—</div>
+        <div class="stat-label">Última resposta recebida</div>
+      </div>
+    </div>
+
+    <!-- FILTROS -->
+    <div class="filters">
+      <span class="filter-label">Filtrar por equipe:</span>
+      <button class="filter-btn active" onclick="filtrar('todos',this)">Todos</button>
+      <button class="filter-btn" onclick="filtrar('Danylo',this)">Danylo</button>
+      <button class="filter-btn" onclick="filtrar('Chis',this)">Chis</button>
+      <button class="filter-btn" onclick="filtrar('Select',this)">Select</button>
+      <button class="filter-btn" onclick="filtrar('Extra',this)">Extra</button>
+      <button class="refresh-btn" onclick="carregarRespostas()">↻ Atualizar</button>
+    </div>
+
+    <!-- TABELA -->
+    <div class="table-wrap">
+      <div class="table-head">
+        <div class="th">Vendedor</div>
+        <div class="th">Equipe</div>
+        <div class="th">Nota</div>
+        <div class="th">Pressão</div>
+        <div class="th">Conduta</div>
+        <div class="th">Data</div>
+        <div class="th">Detalhes</div>
+      </div>
+      <div id="tableBody">
+        <div class="loading">Carregando respostas...</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- MODAL DETALHE -->
+<div class="modal-overlay" id="modalOverlay" onclick="fecharModal(event)">
+  <div class="modal" id="modalBox">
+    <div class="modal-header">
+      <div>
+        <div class="modal-name" id="mNome">—</div>
+        <div class="modal-meta" id="mMeta">—</div>
+      </div>
+      <button class="modal-close" onclick="fecharModal(null,true)">✕</button>
+    </div>
+    <div class="modal-body" id="modalBody"></div>
+  </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<script>
+// ── CONFIGURAÇÃO ──────────────────────────────────────────────
+// ⚠️ TROQUE a senha abaixo para algo seguro!
+const SENHA_ADM = 'GR2025adm';
+
+firebase.initializeApp({
+  apiKey:"AIzaSyAE3NsqIpvgtnEs2wocIfEAdzbzsvbTtfk",
+  authDomain:"gerencia-10f1b.firebaseapp.com",
+  projectId:"gerencia-10f1b",
+  storageBucket:"gerencia-10f1b.firebasestorage.app",
+  messagingSenderId:"198929448777",
+  appId:"1:198929448777:web:5787e54693a595241f6498",
+  measurementId:"G-91CDTGZ2LT"
+});
+const db = firebase.firestore();
+
+// ── ESTADO ────────────────────────────────────────────────────
+let todasRespostas = [];
+let filtroAtual = 'todos';
+
+// ── LOGIN ─────────────────────────────────────────────────────
+function entrar() {
+  const senha = document.getElementById('senhaInput').value;
+  if (senha === SENHA_ADM) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'block';
+    carregarRespostas();
+  } else {
+    const err = document.getElementById('loginErr');
+    err.style.display = 'block';
+    document.getElementById('senhaInput').value = '';
+    document.getElementById('senhaInput').focus();
+    setTimeout(() => err.style.display = 'none', 3000);
+  }
+}
+
+function sair() {
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('adminPanel').style.display = 'none';
+  document.getElementById('senhaInput').value = '';
+  todasRespostas = [];
+}
+
+// ── CARREGAR DO FIREBASE ──────────────────────────────────────
+async function carregarRespostas() {
+  document.getElementById('tableBody').innerHTML = '<div class="loading">Buscando avaliações...</div>';
+  try {
+    const snap = await db.collection('avaliacoes').orderBy('dataHora', 'desc').get();
+    todasRespostas = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    calcularStats();
+    renderTabela();
+  } catch(e) {
+    // Tenta sem orderBy (caso o índice não exista ainda)
+    try {
+      const snap2 = await db.collection('avaliacoes').get();
+      todasRespostas = snap2.docs.map(d => ({ id: d.id, ...d.data() }));
+      calcularStats();
+      renderTabela();
+    } catch(e2) {
+      document.getElementById('tableBody').innerHTML = `<div class="empty"><div class="empty-icon">⚠️</div><div class="empty-text">Erro ao carregar: ${e2.message}</div></div>`;
+    }
+  }
+}
+
+// ── STATS ─────────────────────────────────────────────────────
+function calcularStats() {
+  const total = todasRespostas.length;
+  const notas = todasRespostas.map(r => Number(r.q12)).filter(n => !isNaN(n));
+  const media = notas.length ? (notas.reduce((a,b) => a+b, 0) / notas.length).toFixed(1) : '—';
+  const pressao = todasRespostas.filter(r => r.q13 === 'Sim').length;
+  const recente = todasRespostas.length ? (todasRespostas[0].dataHora || '—') : '—';
+
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statMedia').textContent = notas.length ? media + '/10' : '—';
+  document.getElementById('statPressao').textContent = pressao;
+  document.getElementById('statRecente').textContent = recente.split(' ')[0] || '—';
+}
+
+// ── FILTRO ────────────────────────────────────────────────────
+function filtrar(equipe, btn) {
+  filtroAtual = equipe;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTabela();
+}
+
+// ── RENDER TABELA ─────────────────────────────────────────────
+function renderTabela() {
+  const filtradas = filtroAtual === 'todos' ? todasRespostas : todasRespostas.filter(r => r.equipe === filtroAtual);
+  const body = document.getElementById('tableBody');
+
+  if (!filtradas.length) {
+    body.innerHTML = `<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">Nenhuma avaliação encontrada</div></div>`;
+    return;
+  }
+
+  body.innerHTML = filtradas.map((r, i) => {
+    const nota = Number(r.q12);
+    const notaClass = nota >= 8 ? 'nota-alta' : nota >= 5 ? 'nota-media' : 'nota-baixa';
+    const pressaoClass = r.q13 === 'Sim' ? 'pressao-sim' : r.q13 === 'Não' ? 'pressao-nao' : 'pressao-pnr';
+    const condutaClass = r.q14 === 'Sim' ? 'pressao-sim' : r.q14 === 'Não' ? 'pressao-nao' : 'pressao-pnr';
+    const data = (r.dataHora || '').split(' ')[0] || '—';
+    return `
+      <div class="resp-row" onclick="abrirModal('${r.id}')">
+        <div class="td nome">${esc(r.nome || '—')}</div>
+        <div class="td">${esc(r.equipe || '—')}</div>
+        <div class="td"><span class="nota-badge ${notaClass}">${isNaN(nota) ? '—' : nota}</span></div>
+        <div class="td"><span class="pressao-badge ${pressaoClass}">${esc(r.q13 || '—')}</span></div>
+        <div class="td"><span class="pressao-badge ${condutaClass}">${esc(r.q14 || '—')}</span></div>
+        <div class="td data">${data}</div>
+        <div class="td"><button class="ver-btn" onclick="event.stopPropagation();abrirModal('${r.id}')">Ver tudo</button></div>
+      </div>`;
+  }).join('');
+}
+
+// ── MODAL ─────────────────────────────────────────────────────
+const perguntas = {
+  q1:'Como você avalia o trabalho do seu supervisor?',
+  q2:'O suporte que você recebe do seu supervisor é:',
+  q3:'Seu supervisor te ajuda a melhorar seus resultados?',
+  q4:'Como é a comunicação com seu supervisor?',
+  q5:'Você se sente respeitado(a) pelo seu supervisor?',
+  q6:'Seu supervisor resolve problemas com agilidade?',
+  q7:'Você sente que seu supervisor se preocupa com seu desenvolvimento profissional?',
+  q8:'O ambiente da sua equipe é saudável?',
+  q9:'Você trocaria de equipe por causa da gestão?',
+  q10:'O que seu supervisor faz de melhor?',
+  q11:'O que ele(a) precisa melhorar?',
+  q12:'Nota de 0 a 10 para o supervisor',
+  q13:'Já se sentiu pressionado(a) a adotar práticas que violem normas?',
+  q14:'Sua gestão sugeriu/tolerou condutas inadequadas ou antiéticas?'
+};
+
+function abrirModal(id) {
+  const r = todasRespostas.find(x => x.id === id);
+  if (!r) return;
+
+  document.getElementById('mNome').textContent = r.nome || '—';
+  document.getElementById('mMeta').textContent = `Equipe: ${r.equipe || '—'} · ${r.dataHora || '—'}`;
+
+  const nota = Number(r.q12);
+  const notaClass = nota >= 8 ? 'alta' : nota >= 5 ? 'media' : 'baixa';
+
+  let html = `
+    <div class="modal-section">
+      <div class="modal-section-title">Nota ao Supervisor</div>
+      <div style="display:flex;align-items:center;gap:1rem;">
+        <div class="nota-grande ${notaClass}">${isNaN(nota) ? '—' : nota}<span style="font-size:18px;opacity:.5">/10</span></div>
+        <div style="font-size:12px;color:var(--wh3);letter-spacing:1px;">${nota>=8?'Avaliação positiva':nota>=5?'Avaliação moderada':'Avaliação negativa'}</div>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">Respostas Fechadas</div>`;
+
+  ['q1','q2','q3','q4','q5','q6','q7','q8','q9'].forEach(k => {
+    if (r[k]) html += `<div class="modal-qa"><div class="modal-q">${perguntas[k]}</div><div class="modal-a">${esc(r[k])}</div></div>`;
+  });
+
+  html += `</div><div class="modal-section"><div class="modal-section-title">Respostas Abertas</div>`;
+  ['q10','q11'].forEach(k => {
+    if (r[k]) html += `<div class="modal-qa"><div class="modal-q">${perguntas[k]}</div><div class="modal-a">${esc(r[k])}</div></div>`;
+  });
+
+  html += `</div><div class="modal-section"><div class="modal-section-title" style="color:var(--red)">Conformidade e Ética</div>`;
+  ['q13','q14'].forEach(k => {
+    const isAlert = r[k] === 'Sim';
+    if (r[k]) html += `<div class="modal-qa"><div class="modal-q">${perguntas[k]}</div><div class="modal-a ${isAlert?'alert':''}">${isAlert?'⚠️ ':''} ${esc(r[k])}</div></div>`;
+  });
+
+  // Perguntas dinâmicas
+  const dynKeys = Object.keys(r).filter(k => k.startsWith('dyn_') && !k.endsWith('_pergunta'));
+  if (dynKeys.length) {
+    html += `</div><div class="modal-section"><div class="modal-section-title">Perguntas Adicionadas pela Gestão</div>`;
+    dynKeys.forEach(k => {
+      const pergunta = r[k + '_pergunta'] || k;
+      html += `<div class="modal-qa"><div class="modal-q">${esc(pergunta)}</div><div class="modal-a">${esc(r[k])}</div></div>`;
+    });
+  }
+
+  html += `</div>`;
+  document.getElementById('modalBody').innerHTML = html;
+  document.getElementById('modalOverlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function fecharModal(event, force) {
+  if (force || !event || event.target === document.getElementById('modalOverlay')) {
+    document.getElementById('modalOverlay').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+}
+
+function esc(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+</script>
+</body>
+</html>
